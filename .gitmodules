@@ -1,0 +1,3 @@
+[submodule "plugins/bam"]
+	path = plugins/bam
+	url = https://github.com/BenPyton/bam
