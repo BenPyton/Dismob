@@ -45,7 +45,7 @@ Command | Description
 --- | ---
 `/shutdown` | Stop the bot.
 `/setprefix <prefix>` | Set the command prefix of the bot.
-`/sync` | Sync the slash commands of the bot.
+`/sync` | Sync the slash commands of the bot. This command is also available as standard bot command, useful when syncing for the first time.
 `/module <command> [<args> ...]` | Manage the modules available to the bot. (see below for list of commands)
 
 Below is the list of commands available to the `/module` command.
@@ -56,4 +56,4 @@ Command | Description
 `status [<module> ...]` | Display the loaded status of provided module names (or all available modules if no module name provided).
 `load <module> ...` | Load provided module names (at least one). For example `/module load ping` will load the `plugins/ping/main.py` extension.
 `unload <module> ...` | Unload provided module names (at least one). For example `load ping` will unload the `plugins/ping/main.py` extension.
-`reload <module>` | Reload provided module names (at least one). For example `load ping` will reload the `plugins/ping/main.py` extension.
+`reload <module> ...` | Reload provided module names (at least one). For example `load ping` will reload the `plugins/ping/main.py` extension.
