@@ -10,30 +10,39 @@ An example extension `ping` is available which adds only one command `ping` to t
 
 Make sure you've installed python.
 
+open a command-line terminal in your project cloned/downloaded project folder.
+
+Create a virtual environment for python.
+
+```cmd
+python -m venv venv
+```
+
+Activate it or enable it in your IDE.
+
+Install dependencies.
+
+```cmd
+python -m pip install -r requirements.txt
+```
+
 Add a `.env` file at the root directory (alongside `main.py`) and add those lines:
 
 ```txt
 BOT_TOKEN="your bot token here"
 OWNER="your discord ID here"
 CONFIG_DIR="config"
+BOT_PREFIX="bot."
 ```
 
 > [!NOTE]
-> The `CONFIG_DIR` is optional and will default to `config` if not set.
-
-Run this command:
-
-```cmd
-py -3 -m pip install requirements. txt
-```
-
-> [!NOTE]
-> The `py -3` at the start is used to differentiate multiple versions of python installed on your computer.
+> The `CONFIG_DIR` is optional and will default to `config` if not set.  
+> The `BOT_PREFIX` is optional and will default to `!` if not set.
 
 Then to start the bot run:
 
 ```cmd
-py -3 main.py
+python main.py
 ```
 
 ## Commands
@@ -54,5 +63,5 @@ Command | Aliases | Description
 `list` | `ls` | Display a list of all available modules (loaded or unloaded)
 `status [<module> ...]` | `s` | Display the loaded status of provided module names (or all available modules if no module name provided).
 `load <module> ...` | `l` `enable` `activate` | Load provided module names (at least one). For example `/module load ping` will load the `plugins/ping/main.py` extension.
-`unload <module> ...` | `u` `disable` `deactivate` | Unload provided module names (at least one). For example `load ping` will unload the `plugins/ping/main.py` extension.
-`reload <module> ...` | `rl` `r` | Reload provided module names (at least one). For example `load ping` will reload the `plugins/ping/main.py` extension.
+`unload <module> ...` | `u` `disable` `deactivate` | Unload provided module names (at least one). For example `unload ping` will unload the `plugins/ping/main.py` extension.
+`reload <module> ...` | `rl` `r` | Reload provided module names (at least one). For example `reload ping` will reload the `plugins/ping/main.py` extension.
