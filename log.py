@@ -9,6 +9,7 @@ import discord
 from discord.ext import commands
 from colorama import Fore, Style
 from rate_limiter import get_rate_limiter
+import traceback
 
 ###   Send messages to the client   ###
 
@@ -42,6 +43,7 @@ def warning(msg: str) -> None:
 
 def error(msg: str) -> None:
     log(f"{Style.BRIGHT}{Fore.RED}ERROR    {Style.RESET_ALL}{msg}")
+    traceback.print_stack()
 
 async def safe_send_message(channel: discord.TextChannel, content: str = None, embed: discord.Embed = None):
     """Sends a message to a channel with rate limiting"""
