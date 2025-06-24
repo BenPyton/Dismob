@@ -6,7 +6,7 @@
 
 from pathlib import Path
 import json
-import log
+from dismob import log
 import os
 
 config_dir: str = None

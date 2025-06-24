@@ -8,7 +8,7 @@ import datetime
 import discord
 from discord.ext import commands
 from colorama import Fore, Style
-from rate_limiter import get_rate_limiter
+from dismob.rate_limiter import get_rate_limiter
 import traceback
 
 ###   Send messages to the client   ###

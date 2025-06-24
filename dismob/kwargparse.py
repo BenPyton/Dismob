@@ -5,7 +5,7 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 from typing import Any
-import log
+from dismob import log
 
 class UnexpectedToken(Exception):
     def __init__(self, message: str):

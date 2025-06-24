@@ -8,10 +8,8 @@ import os
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-import log
-import filehelper
-import predicate
-from helpcommand import MyHelpCommand
+from dismob import log, filehelper, predicate
+from dismob.helpcommand import MyHelpCommand
 
 load_dotenv()
 

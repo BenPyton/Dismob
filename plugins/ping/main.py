@@ -5,7 +5,7 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 from discord.ext import commands
-import log
+from dismob import log
 
 async def setup(bot: commands.Bot):
     log.info("Module `ping` setup")
