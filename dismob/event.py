@@ -5,6 +5,7 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 from typing import Any, Callable, List, TypeVar, get_type_hints
+from discord.ext import commands
 
 T = TypeVar('T', bound=Callable[..., Any])
 
@@ -33,8 +34,9 @@ class Event:
         Raises:
             TypeError: If the callback signature doesn't match the event signature
         """
-        if get_type_hints(callback) != self.parameters:
-            raise TypeError("Callback signature does not match event signature")
+        cb_signature = get_type_hints(callback)
+        if cb_signature != self.parameters:
+            raise TypeError(f"Callback signature `{cb_signature}` does not match event signature `{self.parameters}`")
         
         if callback not in self._handlers:
             self._handlers.append(callback)
@@ -79,3 +81,19 @@ class Event:
     def clear(self) -> None:
         """Clear all callbacks."""
         self._handlers.clear()
+
+
+class BotEvents:
+    """
+    A collection of events for the bot.
+    
+    Attributes:
+        on_ready: Event triggered when the bot is ready.
+    """
+    def template_callback(bot: commands.Bot) -> None: pass
+    on_ready = Event(template_callback)
+    
+    @staticmethod
+    def clear() -> None:
+        """Clear all events."""
+        BotEvents.on_ready.clear()

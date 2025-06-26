@@ -33,11 +33,17 @@ BOT_TOKEN="your bot token here"
 OWNER="your discord ID here"
 CONFIG_DIR="config"
 BOT_PREFIX="bot."
+LOG_NAME="devbot"
+LOG_CONSOLE_LEVEL="WARNING"
+LOG_FILE_LEVEL="INFO"
 ```
 
 > [!NOTE]
 > The `CONFIG_DIR` is optional and will default to `config` if not set.  
 > The `BOT_PREFIX` is optional and will default to `!` if not set.
+> The `LOG_NAME` is optional and will default to `dismob` if not set.
+> The `LOG_CONSOLE_LEVEL` is optional and will default to `INFO` if not set.
+> The `LOG_FILE_LEVEL` is optional and will default to `INFO` if not set.
 
 Then to start the bot run:
 
@@ -54,13 +60,13 @@ Command | Aliases | Description
 --- | --- | ---
 `shutdown` | | Stop the bot.
 `sync` | | Sync the slash commands of the bot. This command is also available as standard bot command, useful when syncing for the first time.
-`module <subcommand> [<args> ...]` | `mod` `plugins` | Manage the modules available to the bot. (see below for list of subcommands)
+`nick` | `name` | Change the nickname of the bot in the current server, if no name is passed, then it will reset it to the default one.
+`modules <subcommand> [<args> ...]` | `mod` `plugins` | Manage the modules available to the bot. (see below for list of subcommands)
 
 Below is the list of subcommands related to the module managements.  
 
-Command | Aliases | Description
+Subcommand | Aliases | Description
 --- | --- | ---
-`list` | `ls` | Display a list of all available modules (loaded or unloaded)
 `status [<module> ...]` | `s` | Display the loaded status of provided module names (or all available modules if no module name provided).
 `load <module> ...` | `l` `enable` `activate` | Load provided module names (at least one). For example `/module load ping` will load the `plugins/ping/main.py` extension.
 `unload <module> ...` | `u` `disable` `deactivate` | Unload provided module names (at least one). For example `unload ping` will unload the `plugins/ping/main.py` extension.

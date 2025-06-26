@@ -8,10 +8,17 @@ import os
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from dismob import log, filehelper, predicate
+from dismob import log, filehelper, predicate, decorators
 from dismob.helpcommand import MyHelpCommand
+from dismob.event import Event, BotEvents
 
 load_dotenv()
+
+log.setup_logger(
+    logger_name=os.getenv('LOG_NAME', 'dismob'),
+    file_level=os.getenv('LOG_FILE_LEVEL', 'INFO'),
+    console_level=os.getenv('LOG_CONSOLE_LEVEL', 'INFO')
+)
 
 prefix: str = os.getenv('BOT_PREFIX', '!')
 
@@ -23,7 +30,7 @@ intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 intents.moderation = True
-bot = commands.Bot(command_prefix=prefix, intents=intents, help_command=MyHelpCommand())
+bot: commands.Bot = commands.Bot(command_prefix=prefix, intents=intents, help_command=MyHelpCommand())
 
 @bot.event
 async def on_ready() -> None:
@@ -35,6 +42,7 @@ async def on_ready() -> None:
             log.info(f"Module `{module}` successfully loaded.")
         except Exception as e:
             log.error(f"Failed to load module `{module}`: {e}")
+    BotEvents.on_ready.dispatch(bot)
     log.info(f"Bot is ready.")
 
 def cleanup() -> None:
@@ -84,20 +92,37 @@ async def on_app_command_error(interaction: discord.Interaction, error: discord.
 
 @bot.command(description="Sync the slash commands added/removed by modules")
 @predicate.bot_is_bot_owner()
+@decorators.suppress_command
 async def sync(ctx: commands.Context) -> None:
-    if isinstance(ctx, commands.Context):
-        await ctx.message.delete()
     log.info("Syncing slash commands")
     await bot.tree.sync()
     await log.success(ctx, "Slash commands synced successfully!\n*It may take some times to propagate to all guilds...*")
     
 @bot.command(description="Shutdown gracefully the bot")
 @predicate.bot_is_bot_owner()
+@decorators.suppress_command
 async def shutdown(interaction: discord.Interaction) -> None:
     log.info("Shutting down bot...")
     await log.client(interaction, "Shutting down bot...")
     await bot.close()
     log.info("Bot has been shut off.")
+
+@bot.command(name="nick", aliases=["name"], description="Change the bot's nickname in this server")
+@commands.has_permissions(manage_guild=True)
+@decorators.suppress_command
+async def set_nick(ctx: commands.Context, *, nickname: str = None) -> None:
+    """Change the bot's nickname in the current guild. If no nickname is provided, reset to default."""
+    if not ctx.guild:
+        await log.error(ctx, "This command can only be used in a server.")
+        return
+    try:
+        await ctx.guild.me.edit(nick=nickname)
+        if nickname:
+            await log.success(ctx, f"Bot nickname changed to `{nickname}`.")
+        else:
+            await log.success(ctx, "Bot nickname reset to default.")
+    except Exception as e:
+        await log.error(ctx, f"Failed to change nickname: `{e}`")
 
 ####                        ####
 #       Module Management      #
@@ -119,23 +144,14 @@ def getModuleStatus(module: str) -> str:
     return "active :white_check_mark:" if isModuleActive(module) else "inactive :x:"
 
 @bot.group(name="modules", aliases=["mod", "plugins"], invoke_without_command=True)
+@predicate.bot_is_bot_owner()
+@decorators.suppress_command
 async def modules(ctx: commands.Context) -> None:
     await log.client(ctx, f"Manages modules of the bots. Use `{prefix}help modules` to get all available subcommands.")
 
-@modules.command(name="list", aliases=["ls"])
-async def listModules(ctx: commands.Context) -> None:
-    """
-    List all available modules in the `plugins` directory
-    """
-    allModules: list[str] = getAllModules()
-    count: int = len(allModules)
-    available_modules: str = f"There are {count if count > 0 else 'no'} available module{'s' if count > 1 else ''}:\n"
-    for i, dir in enumerate(allModules):
-        available_modules += f"{dir}{', ' if i < count - 1 else ''}"
-
-    await log.client(ctx, available_modules)
-
 @modules.command(name="status", aliases=["s"])
+@predicate.bot_is_bot_owner()
+@decorators.suppress_command
 async def modulesStatus(ctx: commands.Context, *args: str) -> None:
     """
     Display the loaded status of provided modules
@@ -157,6 +173,8 @@ async def modulesStatus(ctx: commands.Context, *args: str) -> None:
         await log.client(module_status)
 
 @modules.command(name="load", aliases=["l", "enable", "activate"])
+@predicate.bot_is_bot_owner()
+@decorators.suppress_command
 async def loadModules(ctx: commands.Context, *args: str) -> None:
     """
     Try to load the provided modules
@@ -179,6 +197,8 @@ async def loadModules(ctx: commands.Context, *args: str) -> None:
     await log.client(ctx, result)
 
 @modules.command(name="unload", aliases=["u", "disable", "deactivate"])
+@predicate.bot_is_bot_owner()
+@decorators.suppress_command
 async def unloadModules(ctx: commands.Context, *args: str) -> None:
     """
     Try to unload the provided modules
@@ -201,6 +221,8 @@ async def unloadModules(ctx: commands.Context, *args: str) -> None:
     await log.client(ctx, result)
 
 @modules.command(name="reload", aliases=["rl", "r"])
+@predicate.bot_is_bot_owner()
+@decorators.suppress_command
 async def reloadModules(ctx: commands.Context, *args: str) -> None:
     """
     Try to reload the provided modules
