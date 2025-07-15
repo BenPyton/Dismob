@@ -36,6 +36,15 @@ bot: commands.Bot = commands.Bot(command_prefix=prefix, intents=intents, help_co
 async def on_ready() -> None:
     log.info(f"Discord.py version: `{discord.__version__}`")
     log.info(f"Logged in as `{bot.user}`")
+
+    status: str = config.get("status")
+    if status is not None:
+        try:
+            await set_bot_status(status)
+            log.info(f"Bot status set to `{status}`")
+        except Exception as e:
+            log.error(f"Failed to set bot status: `{e}`")
+
     for module in config["modules"]:
         try:
             await bot.load_extension(f"plugins.{module}.main")
@@ -86,6 +95,22 @@ async def on_app_command_error(interaction: discord.Interaction, error: discord.
         # Handle other errors
         await log.failure(interaction, f"An unexpected error occurred while executing the command.\n```\n{error}\n```")
 
+async def set_bot_status(status: str):
+    """Change the bot's status (online, idle, dnd, invisible)."""
+    status_map = {
+        "online": discord.Status.online,
+        "idle": discord.Status.idle,
+        "dnd": discord.Status.dnd,
+        "invisible": discord.Status.invisible
+    }
+    status = status.lower()
+    if status not in status_map:
+        raise ValueError("Invalid status. Choose from: `online`, `idle`, `dnd`, `invisible`.")
+    try:
+        await bot.change_presence(status=status_map[status])
+    except Exception:
+        raise
+
 ####                       ####
 #       General Commands      #
 ####                       ####
@@ -123,6 +148,18 @@ async def set_nick(ctx: commands.Context, *, nickname: str = None) -> None:
             await log.success(ctx, "Bot nickname reset to default.")
     except Exception as e:
         await log.error(ctx, f"Failed to change nickname: `{e}`")
+
+@bot.command(name="status", description="Change the bot's status (online, idle, dnd, invisible)")
+@predicate.bot_is_bot_owner()
+@decorators.suppress_command
+async def set_status(ctx: commands.Context, status: str):
+    """Change the bot's status (online, idle, dnd, invisible)."""
+    try:
+        await set_bot_status(status)
+        config["status"] = status
+        await log.success(ctx, f"Bot status changed to `{status}`.")
+    except Exception as e:
+        await log.failure(ctx, f"Failed to change status: `{e}`")
 
 ####                        ####
 #       Module Management      #
@@ -186,7 +223,8 @@ async def loadModules(ctx: commands.Context, *args: str) -> None:
     for arg in args:
         try:
             await bot.load_extension(f"plugins.{arg}.main")
-            config["modules"].append(arg)
+            if arg not in config["modules"]:
+                config["modules"].append(arg)
             result += f":white_check_mark: Module `{arg}` successfully loaded.\n"
         except commands.errors.ExtensionAlreadyLoaded:
             result += f":white_check_mark: Module `{arg}` is already loaded\n"
@@ -194,6 +232,7 @@ async def loadModules(ctx: commands.Context, *args: str) -> None:
             result += f":x: Module `{arg}` does not exists\n"
         except Exception as e:
             result += f":x: Failed to load module `{arg}`: `{e}`\n"
+            log.error(f"Failed to load module `{arg}`: {e}")
     await log.client(ctx, result)
 
 @modules.command(name="unload", aliases=["u", "disable", "deactivate"])
@@ -218,6 +257,7 @@ async def unloadModules(ctx: commands.Context, *args: str) -> None:
             result += f":x: Module `{arg}` does not exists\n"
         except Exception as e:
             result += f":x: Failed to unload module `{arg}`: `{e}`\n"
+            log.error(f"Failed to unload module `{arg}`: {e}")
     await log.client(ctx, result)
 
 @modules.command(name="reload", aliases=["rl", "r"])
@@ -241,6 +281,7 @@ async def reloadModules(ctx: commands.Context, *args: str) -> None:
             result += f":x: Module `{arg}` does not exists\n"
         except Exception as e:
             result += f":x: Failed to reload module `{arg}`: `{e}`\n"
+            log.error(f"Failed to reload module `{arg}`: {e}")
     await log.client(ctx, result)
 
 # Check if the bot token is provided in the environment variables.

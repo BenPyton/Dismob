@@ -36,14 +36,18 @@ BOT_PREFIX="bot."
 LOG_NAME="devbot"
 LOG_CONSOLE_LEVEL="WARNING"
 LOG_FILE_LEVEL="INFO"
+LOCALE="fr_FR"
+TZ="Europe/Paris"
 ```
 
-> [!NOTE]
+> [!NOTE]  
 > The `CONFIG_DIR` is optional and will default to `config` if not set.  
-> The `BOT_PREFIX` is optional and will default to `!` if not set.
-> The `LOG_NAME` is optional and will default to `dismob` if not set.
-> The `LOG_CONSOLE_LEVEL` is optional and will default to `INFO` if not set.
-> The `LOG_FILE_LEVEL` is optional and will default to `INFO` if not set.
+> The `BOT_PREFIX` is optional and will default to `!` if not set.  
+> The `LOG_NAME` is optional and will default to `dismob` if not set.  
+> The `LOG_CONSOLE_LEVEL` is optional and will default to `INFO` if not set.  
+> The `LOG_FILE_LEVEL` is optional and will default to `INFO` if not set.  
+> The `LOCALE` is optional  
+> The `TZ` is optional  
 
 Then to start the bot run:
 
@@ -60,7 +64,8 @@ Command | Aliases | Description
 --- | --- | ---
 `shutdown` | | Stop the bot.
 `sync` | | Sync the slash commands of the bot. This command is also available as standard bot command, useful when syncing for the first time.
-`nick` | `name` | Change the nickname of the bot in the current server, if no name is passed, then it will reset it to the default one.
+`nick [<name>]` | `name` | Change the nickname of the bot in the current server, if no name is passed, then it will reset it to the default one.
+`status [online\|idle\|dnd\|invisible]` | | Change the bot's status.
 `modules <subcommand> [<args> ...]` | `mod` `plugins` | Manage the modules available to the bot. (see below for list of subcommands)
 
 Below is the list of subcommands related to the module managements.  

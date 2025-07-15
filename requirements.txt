@@ -1,3 +1,6 @@
 discord
 dotenv
 aiosqlite
+pytz
+babel
+python-dateutil
